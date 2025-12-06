@@ -1,36 +1,207 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Simple Media Manager
 
-## Getting Started
+A simple media manager for images and videos built with Next.js, PostgreSQL, and MinIO.
 
-First, run the development server:
+## Features
+
+- User authentication (register/login)
+- Upload images and videos
+- Gallery view with filtering
+- REST API with Bearer token authentication
+
+## Setup
+
+1. Copy `.env.example` to `.env` and configure your environment variables:
+
+```bash
+cp .env.example .env
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Generate Prisma client and push schema:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Register
 
-## Learn More
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "yourpassword",
+    "name": "Your Name"
+  }'
+```
 
-To learn more about Next.js, take a look at the following resources:
+Response:
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "Your Name",
+    "createdAt": "2025-12-06T00:00:00.000Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "message": "User registered successfully"
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Login
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }'
+```
 
-## Deploy on Vercel
+Response:
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "Your Name",
+    "createdAt": "2025-12-06T00:00:00.000Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "message": "Login successful"
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Logout
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+curl -X POST http://localhost:3000/api/auth/logout
+```
+
+#### Get Current User
+
+```bash
+curl http://localhost:3000/api/auth/me \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Media
+
+All media endpoints require authentication via Bearer token.
+
+#### Upload Media
+
+```bash
+curl -X POST http://localhost:3000/api/media \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@/path/to/image.jpg"
+```
+
+Response:
+```json
+{
+  "media": {
+    "id": "uuid",
+    "filename": "generated-uuid.jpg",
+    "originalName": "image.jpg",
+    "mimeType": "image/jpeg",
+    "size": 12345,
+    "url": "https://your-minio-endpoint/media/generated-uuid.jpg",
+    "type": "IMAGE",
+    "userId": "user-uuid",
+    "createdAt": "2025-12-06T00:00:00.000Z",
+    "updatedAt": "2025-12-06T00:00:00.000Z"
+  },
+  "message": "File uploaded successfully"
+}
+```
+
+Supported file types:
+- Images: JPEG, PNG, GIF, WebP, SVG
+- Videos: MP4, WebM, OGG, MOV
+
+Max file size: 100MB
+
+#### List Media
+
+```bash
+curl "http://localhost:3000/api/media?page=1&limit=20&type=IMAGE" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+Query parameters:
+- `page` (optional): Page number, default 1
+- `limit` (optional): Items per page, default 20
+- `type` (optional): Filter by type - `IMAGE` or `VIDEO`
+
+Response:
+```json
+{
+  "media": [
+    {
+      "id": "uuid",
+      "filename": "generated-uuid.jpg",
+      "originalName": "image.jpg",
+      "mimeType": "image/jpeg",
+      "size": 12345,
+      "url": "https://your-minio-endpoint/media/generated-uuid.jpg",
+      "type": "IMAGE",
+      "userId": "user-uuid",
+      "createdAt": "2025-12-06T00:00:00.000Z",
+      "updatedAt": "2025-12-06T00:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+#### Delete Media
+
+```bash
+curl -X DELETE "http://localhost:3000/api/media?id=MEDIA_UUID" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+Response:
+```json
+{
+  "message": "Media deleted successfully"
+}
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | Secret key for JWT signing |
+| `MINIO_ENDPOINT` | MinIO server hostname |
+| `MINIO_PORT` | MinIO server port |
+| `MINIO_USE_SSL` | Use SSL for MinIO (`true`/`false`) |
+| `MINIO_ACCESS_KEY` | MinIO access key |
+| `MINIO_SECRET_KEY` | MinIO secret key |
+| `MINIO_BUCKET` | MinIO bucket name |

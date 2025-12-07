@@ -14,6 +14,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Dummy DATABASE_URL for prisma generate (only needs valid format, not actual connection)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npx prisma generate
 RUN npm run build
 
@@ -22,27 +24,6 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-
-# Required environment variables (set at build/runtime)
-ARG DATABASE_URL
-ARG JWT_SECRET
-ARG MINIO_ENDPOINT
-ARG MINIO_PORT
-ARG MINIO_USE_SSL
-ARG MINIO_ACCESS_KEY
-ARG MINIO_SECRET_KEY
-ARG MINIO_BUCKET
-ARG NEXT_PUBLIC_API_URL
-
-ENV DATABASE_URL=$DATABASE_URL
-ENV JWT_SECRET=$JWT_SECRET
-ENV MINIO_ENDPOINT=$MINIO_ENDPOINT
-ENV MINIO_PORT=$MINIO_PORT
-ENV MINIO_USE_SSL=$MINIO_USE_SSL
-ENV MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY
-ENV MINIO_SECRET_KEY=$MINIO_SECRET_KEY
-ENV MINIO_BUCKET=$MINIO_BUCKET
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

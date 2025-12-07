@@ -7,7 +7,7 @@
 # CONFIGURATION - Update these values
 # ============================================
 API_URL="https://media.hieunguyen.dev"
-AUTH_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZjFmYzY1NS02MjA0LTRiMWMtYTJlNi03NDhjN2M5MGQxNDciLCJlbWFpbCI6ImhpZXVuZ3V5ZW5lbEBnbWFpbC5jb20iLCJpYXQiOjE3NjUwODAxNzIsImV4cCI6NDkyMDg0MDE3Mn0.344doPV6dsT0n33RIoV1zFrEU62Tta3m2Y_urJAUn0I"
+AUTH_TOKEN="YOUR_AUTH_TOKEN_HERE"
 
 # ============================================
 # Script Logic - No need to modify below

@@ -154,7 +154,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ media, message: "File uploaded successfully" }, { status: 201 });
+    const host = request.headers.get("host") || "localhost:3000";
+    const protocol = request.headers.get("x-forwarded-proto") || "http";
+    const shareLink = `${protocol}://${host}/v/${media.id}`;
+
+    return NextResponse.json({ media, shareLink, message: "File uploaded successfully" }, { status: 201 });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(

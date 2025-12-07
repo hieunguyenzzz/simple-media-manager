@@ -27,6 +27,7 @@ export default function MediaGallery() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "IMAGE" | "VIDEO">("all");
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const fetchMedia = useCallback(async (page = 1) => {
     setLoading(true);
@@ -67,6 +68,31 @@ export default function MediaGallery() {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const copyShareLink = async (id: string) => {
+    const shareUrl = `${window.location.origin}/v/${id}`;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        // Fallback for non-secure contexts
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      // Show the URL in a prompt as last resort
+      prompt("Copy this link:", shareUrl);
+    }
   };
 
   if (loading && media.length === 0) {
@@ -215,6 +241,12 @@ export default function MediaGallery() {
                 </div>
               </div>
               <div className="flex gap-2">
+                <button
+                  onClick={() => copyShareLink(selectedMedia.id)}
+                  className="flex-1 bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
+                >
+                  {copied ? "Copied!" : "Share Link"}
+                </button>
                 <a
                   href={selectedMedia.url}
                   target="_blank"

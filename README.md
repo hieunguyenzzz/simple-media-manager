@@ -7,6 +7,7 @@ A simple media manager for images and videos built with Next.js, PostgreSQL, and
 - User authentication (register/login)
 - Upload images and videos
 - Gallery view with filtering
+- Public shareable links for media
 - REST API with Bearer token authentication
 
 ## Setup
@@ -131,6 +132,7 @@ Response:
     "createdAt": "2025-12-06T00:00:00.000Z",
     "updatedAt": "2025-12-06T00:00:00.000Z"
   },
+  "shareLink": "http://localhost:3000/v/uuid",
   "message": "File uploaded successfully"
 }
 ```
@@ -205,3 +207,15 @@ Response:
 | `MINIO_ACCESS_KEY` | MinIO access key |
 | `MINIO_SECRET_KEY` | MinIO secret key |
 | `MINIO_BUCKET` | MinIO bucket name |
+
+## Sharing Media
+
+Each uploaded media file can be shared via a public URL:
+
+```
+http://localhost:3000/v/{media-id}
+```
+
+- The `shareLink` is returned in the upload API response
+- In the web UI, click on any media item and use the "Share Link" button to copy the URL
+- Share links are public and don't require authentication

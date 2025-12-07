@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import prisma from "./prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-const TOKEN_EXPIRY = "7d";
+const TOKEN_EXPIRY = "100y"; // Essentially permanent
 
 export interface JWTPayload {
   userId: string;

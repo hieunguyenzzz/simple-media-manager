@@ -140,11 +140,12 @@ export default function MediaGallery() {
                   src={item.url}
                   alt={item.originalName}
                   fill
-                  className="object-cover"
+                  className="object-cover z-0"
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                  unoptimized
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                <div className="w-full h-full flex items-center justify-center bg-gray-800 z-0">
                   <svg
                     className="w-12 h-12 text-white"
                     fill="currentColor"
@@ -154,7 +155,7 @@ export default function MediaGallery() {
                   </svg>
                 </div>
               )}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center z-10">
                 <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium truncate px-2">
                   {item.originalName}
                 </span>

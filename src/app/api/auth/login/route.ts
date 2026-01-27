@@ -34,6 +34,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!user.approved) {
+      return NextResponse.json(
+        { error: "Your account is pending approval. Please wait for an administrator to approve your account." },
+        { status: 403 }
+      );
+    }
+
     const token = generateToken({ userId: user.id, email: user.email });
 
     const response = NextResponse.json({

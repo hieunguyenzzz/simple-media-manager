@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +35,11 @@ export default function LoginPage() {
         return;
       }
 
+      if (data.pendingApproval) {
+        setRegistrationSuccess(true);
+        return;
+      }
+
       router.push("/");
       router.refresh();
     } catch {
@@ -42,6 +48,49 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (registrationSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
+          <div className="mb-4">
+            <svg
+              className="mx-auto h-16 w-16 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            Thank You for Registering!
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Your account is pending approval. You will be notified once an
+            administrator has approved your account.
+          </p>
+          <button
+            onClick={() => {
+              setRegistrationSuccess(false);
+              setIsLogin(true);
+              setEmail("");
+              setPassword("");
+              setName("");
+            }}
+            className="text-blue-600 hover:underline"
+          >
+            Return to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

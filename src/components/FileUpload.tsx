@@ -2,6 +2,12 @@
 
 import { useState, useRef } from "react";
 
+interface UploadResult {
+  name: string;
+  shareLink: string;
+  url: string;
+}
+
 interface FileUploadProps {
   onUploadComplete: () => void;
 }
@@ -10,16 +16,37 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
+  const [results, setResults] = useState<UploadResult[]>([]);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const copyToClipboard = async (text: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+    }
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
     setProgress(0);
+    setResults([]);
 
     const totalFiles = files.length;
     let completed = 0;
+    const uploaded: UploadResult[] = [];
 
     for (const file of Array.from(files)) {
       try {
@@ -31,8 +58,14 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
           body: formData,
         });
 
-        if (!response.ok) {
-          const data = await response.json();
+        const data = await response.json();
+        if (response.ok) {
+          uploaded.push({
+            name: file.name,
+            shareLink: data.shareLink,
+            url: data.media.url,
+          });
+        } else {
           console.error(`Failed to upload ${file.name}:`, data.error);
         }
       } catch (error) {
@@ -45,6 +78,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
 
     setUploading(false);
     setProgress(0);
+    setResults(uploaded);
     onUploadComplete();
 
     if (fileInputRef.current) {
@@ -151,6 +185,40 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
           </>
         )}
       </div>
+
+      {results.length > 0 && (
+        <div className="mt-4 border rounded-lg divide-y">
+          {results.map((result, index) => (
+            <div key={index} className="flex items-center gap-3 p-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-700 truncate">{result.name}</p>
+                <p className="text-xs text-gray-400 truncate">{result.shareLink}</p>
+              </div>
+              <button
+                onClick={() => copyToClipboard(result.shareLink, index)}
+                className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                {copiedIndex === index ? "Copied!" : "Copy Link"}
+              </button>
+              <a
+                href={result.url}
+                download
+                className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+              >
+                Download
+              </a>
+            </div>
+          ))}
+          <div className="p-2 text-center">
+            <button
+              onClick={() => setResults([])}
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

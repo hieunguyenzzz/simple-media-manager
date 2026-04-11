@@ -5,15 +5,18 @@ import { useState } from "react";
 interface MediaViewerProps {
   url: string;
   originalName: string;
-  type: "IMAGE" | "VIDEO";
+  type: "IMAGE" | "VIDEO" | "DOCUMENT";
+  mimeType: string;
   size: number;
 }
 
-export default function MediaViewer({ url, originalName, type, size }: MediaViewerProps) {
+export default function MediaViewer({ url, originalName, type, mimeType, size }: MediaViewerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const isVideo = type === "VIDEO";
   const isImage = type === "IMAGE";
+  const isDocument = type === "DOCUMENT";
+  const isPdf = mimeType === "application/pdf";
 
   return (
     <>
@@ -37,11 +40,26 @@ export default function MediaViewer({ url, originalName, type, size }: MediaView
               onClick={() => setIsFullscreen(true)}
             />
           )}
+          {isDocument && isPdf && (
+            <iframe
+              src={url}
+              className="w-full h-[85vh]"
+              title={originalName}
+            />
+          )}
+          {isDocument && !isPdf && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <svg className="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <p className="text-gray-300 text-lg">{originalName}</p>
+            </div>
+          )}
           <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-center sm:text-left text-gray-400">
               <p className="text-lg">{originalName}</p>
               <p className="text-sm mt-1">
-                {isVideo ? "Video" : "Image"} &bull;{" "}
+                {isVideo ? "Video" : isImage ? "Image" : "Document"} &bull;{" "}
                 {(size / (1024 * 1024)).toFixed(2)} MB
               </p>
             </div>

@@ -86,7 +86,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*,video/*"
+          accept="image/*,video/*,.pdf,.csv,.json"
           onChange={(e) => handleFiles(e.target.files)}
           className="hidden"
           id="file-upload"
@@ -145,7 +145,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               </label>
             </p>
             <p className="text-sm text-gray-500">
-              Supports images (JPG, PNG, GIF, WebP, SVG) and videos (MP4, WebM, OGG, MOV)
+              Supports images, videos, PDF, CSV, and JSON files
             </p>
             <p className="text-sm text-gray-500">Max file size: 100MB</p>
           </>

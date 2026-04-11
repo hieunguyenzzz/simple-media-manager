@@ -18,6 +18,11 @@ const ALLOWED_VIDEO_TYPES = [
   "video/ogg",
   "video/quicktime",
 ];
+const ALLOWED_DOCUMENT_TYPES = [
+  "application/pdf",
+  "text/csv",
+  "application/json",
+];
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 function getMediaType(mimeType: string): MediaType | null {
@@ -26,6 +31,9 @@ function getMediaType(mimeType: string): MediaType | null {
   }
   if (ALLOWED_VIDEO_TYPES.includes(mimeType)) {
     return MediaType.VIDEO;
+  }
+  if (ALLOWED_DOCUMENT_TYPES.includes(mimeType)) {
+    return MediaType.DOCUMENT;
   }
   return null;
 }
@@ -74,7 +82,7 @@ export async function GET(request: NextRequest) {
 
     const where = {
       userId: user.id,
-      ...(type && (type === "IMAGE" || type === "VIDEO") ? { type: type as MediaType } : {}),
+      ...(type && (type === "IMAGE" || type === "VIDEO" || type === "DOCUMENT") ? { type: type as MediaType } : {}),
     };
 
     const [media, total] = await Promise.all([
@@ -131,7 +139,7 @@ export async function POST(request: NextRequest) {
     const mediaType = getMediaType(file.type);
     if (!mediaType) {
       return NextResponse.json(
-        { error: "Invalid file type. Only images and videos are allowed." },
+        { error: "Invalid file type. Only images, videos, PDFs, CSVs, and JSON files are allowed." },
         { status: 400 }
       );
     }

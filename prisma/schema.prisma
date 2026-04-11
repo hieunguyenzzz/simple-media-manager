@@ -37,4 +37,5 @@ model Media {
 enum MediaType {
   IMAGE
   VIDEO
+  DOCUMENT
 }

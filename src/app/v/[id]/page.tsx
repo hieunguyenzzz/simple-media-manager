@@ -22,6 +22,7 @@ export default async function VideoPage({ params }: PageProps) {
       url={media.url}
       originalName={media.originalName}
       type={media.type}
+      mimeType={media.mimeType}
       size={media.size}
     />
   );

@@ -10,7 +10,7 @@ interface Media {
   mimeType: string;
   size: number;
   url: string;
-  type: "IMAGE" | "VIDEO";
+  type: "IMAGE" | "VIDEO" | "DOCUMENT";
   createdAt: string;
 }
 
@@ -25,7 +25,7 @@ export default function MediaGallery() {
   const [media, setMedia] = useState<Media[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "IMAGE" | "VIDEO">("all");
+  const [filter, setFilter] = useState<"all" | "IMAGE" | "VIDEO" | "DOCUMENT">("all");
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -107,7 +107,7 @@ export default function MediaGallery() {
     <div>
       {/* Filter Tabs */}
       <div className="flex gap-2 mb-6">
-        {(["all", "IMAGE", "VIDEO"] as const).map((type) => (
+        {(["all", "IMAGE", "VIDEO", "DOCUMENT"] as const).map((type) => (
           <button
             key={type}
             onClick={() => setFilter(type)}
@@ -117,7 +117,7 @@ export default function MediaGallery() {
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
-            {type === "all" ? "All" : type === "IMAGE" ? "Images" : "Videos"}
+            {type === "all" ? "All" : type === "IMAGE" ? "Images" : type === "VIDEO" ? "Videos" : "Documents"}
           </button>
         ))}
       </div>
@@ -144,7 +144,7 @@ export default function MediaGallery() {
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                   unoptimized
                 />
-              ) : (
+              ) : item.type === "VIDEO" ? (
                 <div className="w-full h-full flex items-center justify-center bg-gray-800 z-0">
                   <svg
                     className="w-12 h-12 text-white"
@@ -153,6 +153,13 @@ export default function MediaGallery() {
                   >
                     <path d="M8 5v14l11-7z" />
                   </svg>
+                </div>
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 z-0 p-2">
+                  <svg className="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-xs text-gray-500 mt-1 uppercase">{item.originalName.split('.').pop()}</span>
                 </div>
               )}
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center z-10">
@@ -220,12 +227,26 @@ export default function MediaGallery() {
                   height={600}
                   className="max-w-full h-auto object-contain"
                 />
-              ) : (
+              ) : selectedMedia.type === "VIDEO" ? (
                 <video
                   src={selectedMedia.url}
                   controls
                   className="max-w-full max-h-[50vh]"
                 />
+              ) : selectedMedia.mimeType === "application/pdf" ? (
+                <iframe
+                  src={selectedMedia.url}
+                  className="w-full h-[55vh]"
+                  title={selectedMedia.originalName}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-gray-500 text-sm">{selectedMedia.originalName}</p>
+                  <p className="text-gray-400 text-xs mt-1">{selectedMedia.mimeType}</p>
+                </div>
               )}
             </div>
             <div className="p-4 border-t">

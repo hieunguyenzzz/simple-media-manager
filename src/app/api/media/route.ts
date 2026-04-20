@@ -22,6 +22,9 @@ const ALLOWED_DOCUMENT_TYPES = [
   "application/pdf",
   "text/csv",
   "application/json",
+  "application/zip",
+  "application/x-zip-compressed",
+  "application/x-zip",
 ];
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
@@ -139,7 +142,7 @@ export async function POST(request: NextRequest) {
     const mediaType = getMediaType(file.type);
     if (!mediaType) {
       return NextResponse.json(
-        { error: "Invalid file type. Only images, videos, PDFs, CSVs, and JSON files are allowed." },
+        { error: "Invalid file type. Only images, videos, PDFs, CSVs, JSON, and ZIP files are allowed." },
         { status: 400 }
       );
     }

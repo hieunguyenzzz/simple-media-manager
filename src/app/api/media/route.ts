@@ -26,7 +26,7 @@ const ALLOWED_DOCUMENT_TYPES = [
   "application/x-zip-compressed",
   "application/x-zip",
 ];
-const MAX_FILE_SIZE = 300 * 1024 * 1024; // 300MB
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
 function getMediaType(mimeType: string): MediaType | null {
   if (ALLOWED_IMAGE_TYPES.includes(mimeType)) {
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
 
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: "File size exceeds 300MB limit" },
+        { error: "File size exceeds 500MB limit" },
         { status: 400 }
       );
     }

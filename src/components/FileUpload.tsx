@@ -181,7 +181,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
             <p className="text-sm text-gray-500">
               Supports images, videos, PDF, CSV, JSON, and ZIP files
             </p>
-            <p className="text-sm text-gray-500">Max file size: 300MB</p>
+            <p className="text-sm text-gray-500">Max file size: 500MB</p>
           </>
         )}
       </div>

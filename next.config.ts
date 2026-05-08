@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   experimental: {
-    proxyClientMaxBodySize: "300mb",
+    proxyClientMaxBodySize: "500mb",
   },
   images: {
     remotePatterns: [

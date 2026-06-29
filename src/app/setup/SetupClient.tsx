@@ -33,7 +33,7 @@ export default function SetupClient() {
     : "https://media.hieunguyen.dev";
 
   const installCommand = token
-    ? `curl -fsSL "${apiUrl}/api/setup/install.sh?token=${token}" | bash`
+    ? `curl -fsSL "${apiUrl}/api/setup/install.sh?token=${token}" -o ~/media-setup.sh && bash ~/media-setup.sh`
     : "";
 
   const handleCopy = async () => {
@@ -168,6 +168,7 @@ export default function SetupClient() {
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• macOS (Apple Silicon or Intel)</li>
               <li>• Homebrew will be installed automatically if not present</li>
+              <li>• An Administrator account — Homebrew prompts for your Mac password during install (only if Homebrew isn&apos;t already installed)</li>
             </ul>
           </div>
 

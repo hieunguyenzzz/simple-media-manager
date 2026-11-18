@@ -42,6 +42,11 @@ case "$EXTENSION_LOWER" in
     webm) MIME_TYPE="video/webm" ;;
     ogg) MIME_TYPE="video/ogg" ;;
     mov) MIME_TYPE="video/quicktime" ;;
+    pdf) MIME_TYPE="application/pdf" ;;
+    csv) MIME_TYPE="text/csv" ;;
+    json) MIME_TYPE="application/json" ;;
+    zip) MIME_TYPE="application/zip" ;;
+    xlsx) MIME_TYPE="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ;;
     *)
         osascript -e 'display notification "Unsupported file type: '"$EXTENSION"'" with title "Media Manager" subtitle "Error"'
         exit 1

@@ -12,6 +12,18 @@ interface MediaViewerProps {
 
 export default function MediaViewer({ url, originalName, type, mimeType, size }: MediaViewerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyDirectLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Copy direct link failed:", error);
+      window.prompt("Copy this link:", url);
+    }
+  };
 
   const isVideo = type === "VIDEO";
   const isImage = type === "IMAGE";
@@ -72,6 +84,12 @@ export default function MediaViewer({ url, originalName, type, mimeType, size }:
                   View Full Size
                 </button>
               )}
+              <button
+                onClick={copyDirectLink}
+                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
+              >
+                {copied ? "Copied!" : "Copy Direct Link"}
+              </button>
               <a
                 href={url}
                 download={originalName}
